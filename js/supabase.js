@@ -14,7 +14,6 @@ async function saveLocationToDB(data) {
             province: data.province,
             city: data.city,
             barangay: data.barangay,
-            postal_code: data.postal,
             notes: data.notes,
             image_url: data.imageUrl,
             coords: pointStr
@@ -26,14 +25,14 @@ async function saveLocationToDB(data) {
 
 async function fetchAllLocations() {
     const { data, error } = await supabaseClient
+        .from('water_locations')
         .select(`
             id, name, type, access, indoor_outdoor, 
-            address_line1, address_line2, province, city, barangay, postal_code, 
+            address_line1, address_line2, province, city, barangay,
             notes, image_url,
             lat:st_y(coords::geometry), 
             lng:st_x(coords::geometry)
-        `)
-        .from('water_locations');
+        `);
 
     if (error) throw error;
     return data;

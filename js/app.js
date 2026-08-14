@@ -100,7 +100,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 province: document.getElementById('loc-province').value,
                 city: document.getElementById('loc-city').value,
                 barangay: document.getElementById('loc-barangay').value,
-                postal: document.getElementById('loc-postal').value,
                 notes: document.getElementById('loc-notes').value,
                 imageUrl: imageUrl,
                 lat: coordsInput.dataset.lat,
