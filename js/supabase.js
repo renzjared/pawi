@@ -1,7 +1,6 @@
 const supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
 async function saveLocationToDB(data) {
-    // PostGIS requires geography to be formatted as POINT(longitude latitude)
     const pointStr = `POINT(${data.lng} ${data.lat})`;
 
     const { error } = await supabase.from('water_locations').insert([
@@ -10,9 +9,12 @@ async function saveLocationToDB(data) {
             type: data.type,
             access: data.access,
             indoor_outdoor: data.setting,
-            building: data.building,
-            floor: data.floor,
-            street: data.street,
+            address_line1: data.line1,
+            address_line2: data.line2,
+            province: data.province,
+            city: data.city,
+            barangay: data.barangay,
+            postal_code: data.postal,
             notes: data.notes,
             image_url: data.imageUrl,
             coords: pointStr
@@ -23,10 +25,11 @@ async function saveLocationToDB(data) {
 }
 
 async function fetchAllLocations() {
-    // Using ST_Y and ST_X to convert PostGIS POINT back to readable lat/lng
     const { data, error } = await supabase
         .select(`
-            id, name, type, access, indoor_outdoor, building, floor, street, notes, image_url,
+            id, name, type, access, indoor_outdoor, 
+            address_line1, address_line2, province, city, barangay, postal_code, 
+            notes, image_url,
             lat:st_y(coords::geometry), 
             lng:st_x(coords::geometry)
         `)

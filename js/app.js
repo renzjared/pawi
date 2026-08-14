@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     initMaps();
 
+    // Routing Logic
     const routeLinks = document.querySelectorAll('.tab-link');
     const modules = document.querySelectorAll('.module');
     const navBtns = document.querySelectorAll('.tab-btn');
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
+    // Map Searching and Filtering
     document.getElementById('map-search-btn').addEventListener('click', () => {
         const query = document.getElementById('map-search-input').value;
         geocodeLocation(query, fullMap);
@@ -40,9 +42,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         plotLocations(allLocations, e.target.value);
     });
 
-    // --- NEW: FORM SUBMISSION & LOCAL SAVING ---
+    // Live Supabase Form Submission
     const form = document.getElementById('add-location-form');
-    form.addEventListener('submit', (e) => {
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const coordsInput = document.getElementById('loc-coords');
@@ -51,33 +55,70 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // Create a local mock object
-        const newLocation = {
-            id: Date.now(),
-            name: document.getElementById('loc-name').value,
-            type: document.getElementById('loc-type').value,
-            access: document.getElementById('loc-access').value,
-            street: document.getElementById('loc-line1').value,
-            lat: parseFloat(coordsInput.dataset.lat),
-            lng: parseFloat(coordsInput.dataset.lng)
-        };
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Uploading...';
 
-        // Add to our active session array and re-render the map
-        allLocations.push(newLocation);
-        plotLocations(allLocations, document.getElementById('filter-access').value);
+        try {
+            // Optional Image Upload
+            let imageUrl = null;
+            const fileInput = document.getElementById('loc-image');
+            if (fileInput.files.length > 0) {
+                imageUrl = await uploadImageToSupabase(fileInput.files[0]);
+            }
 
-        alert("Hydration spot added successfully! It is now visible on the map.");
-        
-        // Reset form and jump to map view
-        form.reset();
-        coordsInput.dataset.lat = '';
-        coordsInput.dataset.lng = '';
-        document.querySelector('.tab-btn[data-target="map-view"]').click();
-        
-        // Center full map on the new location
-        setTimeout(() => {
-            fullMap.setView([newLocation.lat, newLocation.lng], 16);
-        }, 200);
+            // Construct Payload with new fields
+            const payload = {
+                name: document.getElementById('loc-name').value,
+                type: document.getElementById('loc-type').value,
+                setting: document.getElementById('loc-setting').value,
+                access: document.getElementById('loc-access').value,
+                line1: document.getElementById('loc-line1').value,
+                line2: document.getElementById('loc-line2').value,
+                province: document.getElementById('loc-province').value,
+                city: document.getElementById('loc-city').value,
+                barangay: document.getElementById('loc-barangay').value,
+                postal: document.getElementById('loc-postal').value,
+                notes: document.getElementById('loc-notes').value,
+                imageUrl: imageUrl,
+                lat: coordsInput.dataset.lat,
+                lng: coordsInput.dataset.lng
+            };
+
+            // Save to DB
+            submitBtn.textContent = 'Saving Location...';
+            await saveLocationToDB(payload);
+
+            alert('Awesome! Location added successfully to the live map.');
+            form.reset();
+            coordsInput.dataset.lat = '';
+            coordsInput.dataset.lng = '';
+            
+            // Switch back to map view 
+            document.querySelector('.tab-btn[data-target="map-view"]').click();
+            
+            // Re-fetch and plot all locations to include the new one
+            allLocations = await fetchAllLocations();
+            plotLocations(allLocations, document.getElementById('filter-access').value);
+            
+            // Pan to new location
+            setTimeout(() => {
+                fullMap.setView([payload.lat, payload.lng], 16);
+            }, 200);
+            
+        } catch (error) {
+            console.error(error);
+            alert('Oops! Something went wrong: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Location';
+        }
     });
 
+    // Initial load of live pins from Supabase
+    try {
+        allLocations = await fetchAllLocations(); 
+        plotLocations(allLocations, 'all');
+    } catch (error) {
+        console.error('Failed to load map pins:', error);
+    }
 });

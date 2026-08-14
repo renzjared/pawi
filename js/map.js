@@ -133,7 +133,7 @@ function plotLocations(locations, filter = 'all') {
         card.innerHTML = `
             <h4>${loc.name}</h4>
             <span class="badge ${badgeClass}">${loc.access}</span>
-            <p style="font-size:14px; margin:0; color:#777; font-weight: 700;">📍 ${loc.building || loc.street || 'View on map'}</p>
+            <p style="font-size:14px; margin:0; color:#777; font-weight: 700;">📍 ${loc.address_line1 || 'View on map'}</p>
         `;
         
         card.addEventListener('click', () => {
