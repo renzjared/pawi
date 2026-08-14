@@ -201,6 +201,26 @@
                     </fieldset>
 
                     <div class="form-group">
+                        <label>Photo Proof (Optional)</label>
+                        <select id="loc-image-type">
+                            <option value="none">None (No Photo)</option>
+                            <option value="file">Upload File</option>
+                            <option value="url">Enter Image URL</option>
+                            <option value="imgur" disabled>Upload via Imgur (Coming Soon)</option>
+                        </select>
+                    </div>
+
+                    <!-- Hidden by default, shown if "Upload File" is selected -->
+                    <div class="form-group" id="group-image-file" style="display: none;">
+                        <input type="file" id="loc-image-file" accept="image/*">
+                    </div>
+
+                    <!-- Hidden by default, shown if "Image URL" is selected -->
+                    <div class="form-group" id="group-image-url" style="display: none;">
+                        <input type="url" id="loc-image-url" placeholder="https://example.com/photo.jpg">
+                    </div>
+
+                    <div class="form-group">
                         <label>Notes / Instructions</label>
                         <textarea id="loc-notes" placeholder="e.g. Bring your own tumbler." rows="2"></textarea>
                     </div>

@@ -38,6 +38,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === 'Enter') geocodeLocation(e.target.value, fullMap);
     });
 
+    // Image Upload Type Toggler
+    document.getElementById('loc-image-type').addEventListener('change', (e) => {
+        const fileGroup = document.getElementById('group-image-file');
+        const urlGroup = document.getElementById('group-image-url');
+        
+        fileGroup.style.display = 'none';
+        urlGroup.style.display = 'none';
+        
+        if (e.target.value === 'file') {
+            fileGroup.style.display = 'block';
+        } else if (e.target.value === 'url') {
+            urlGroup.style.display = 'block';
+        }
+    });
+
     document.getElementById('filter-access').addEventListener('change', (e) => {
         plotLocations(allLocations, e.target.value);
     });
@@ -59,11 +74,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         submitBtn.textContent = 'Uploading...';
 
         try {
-            // Optional Image Upload
             let imageUrl = null;
-            const fileInput = document.getElementById('loc-image');
-            if (fileInput.files.length > 0) {
-                imageUrl = await uploadImageToSupabase(fileInput.files[0]);
+            const imageType = document.getElementById('loc-image-type').value;
+            
+            if (imageType === 'file') {
+                const fileInput = document.getElementById('loc-image-file');
+                if (fileInput.files.length > 0) {
+                    imageUrl = await uploadImageToSupabase(fileInput.files[0]);
+                }
+            } else if (imageType === 'url') {
+                const urlInput = document.getElementById('loc-image-url').value;
+                if (urlInput.trim() !== '') {
+                    imageUrl = urlInput.trim();
+                }
             }
 
             // Construct Payload with new fields
