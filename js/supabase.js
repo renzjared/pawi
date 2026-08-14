@@ -1,9 +1,9 @@
-const supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
 async function saveLocationToDB(data) {
     const pointStr = `POINT(${data.lng} ${data.lat})`;
 
-    const { error } = await supabase.from('water_locations').insert([
+    const { error } = await supabaseClient.from('water_locations').insert([
         {
             name: data.name,
             type: data.type,
@@ -25,7 +25,7 @@ async function saveLocationToDB(data) {
 }
 
 async function fetchAllLocations() {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .select(`
             id, name, type, access, indoor_outdoor, 
             address_line1, address_line2, province, city, barangay, postal_code, 
