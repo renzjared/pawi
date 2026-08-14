@@ -28,10 +28,10 @@ async function fetchAllLocations() {
         .from('water_locations')
         .select(`
             id, name, type, access, indoor_outdoor, 
-            address_line1, address_line2, province, city, barangay,
+            address_line1, address_line2, province, city, barangay, 
             notes, image_url,
-            lat:st_y(coords::geometry), 
-            lng:st_x(coords::geometry)
+            lat, 
+            lng
         `);
 
     if (error) throw error;
