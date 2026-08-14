@@ -27,6 +27,8 @@
     <main id="main-content">
         <!-- LANDING PAGE MODULE -->
         <section id="landing-view" class="module active">
+            
+            <!-- SURFACE LEVEL (Light Blue) -->
             <div class="hero animate-up">
                 <div class="hero-content">
                     <div class="hero-badge">Beta</div>
@@ -42,64 +44,58 @@
                 </div>
             </div>
 
-            <div class="content-section text-center bg-light animate-up stagger-1">
-                <h3>Our Commitment</h3>
-                <p class="subtitle">Building a sustainable, walkable city aligned with global goals.</p>
-                <div class="sdg-grid">
-                    <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/1d6a1084259517.5d56cfced8423.jpg" alt="SDG 6">
-                    <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/1e3d5f84259517.5d56cfcf4c140.jpg" alt="SDG 11">
-                    <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/61269284259517.5d56cfcf4a970.jpg" alt="SDG 12">
-                </div>
+            <!-- ANIMATED WAVES SEPARATOR -->
+            <div class="wave-divider">
+                <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                    <defs>
+                        <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                    </defs>
+                    <g class="parallax">
+                        <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(28, 176, 246, 0.7)" />
+                        <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(28, 176, 246, 0.5)" />
+                        <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(28, 176, 246, 0.3)" />
+                        <use xlink:href="#gentle-wave" x="48" y="7" fill="#1CB0F6" />
+                    </g>
+                </svg>
             </div>
 
-            <div class="content-section animate-up stagger-2">
-                <div class="split-section">
-                    <div class="split-left"><div id="mini-map"></div></div>
-                    <div class="split-right">
-                        <h3>Water in your vicinity</h3>
-                        <p>Check out the hydration spots currently active near you. The map is updated daily by our community.</p>
-                        <button class="btn-secondary tab-link" data-target="map-view">Explore Full Map</button>
+            <!-- UNDERWATER WORLD (Deep Blue) -->
+            <div class="underwater-world">
+                <div class="content-section text-center animate-up stagger-1">
+                    <h3>Our Commitment</h3>
+                    <p class="subtitle">The UN Sustainable Development Goals.</p>
+                    <div class="sdg-grid">
+                        <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/1d6a1084259517.5d56cfced8423.jpg" alt="SDG 6">
+                        <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/1e3d5f84259517.5d56cfcf4c140.jpg" alt="SDG 11">
+                        <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/61269284259517.5d56cfcf4a970.jpg" alt="SDG 12">
                     </div>
                 </div>
-            </div>
 
-            <div class="content-section text-center animate-up stagger-3">
-                <h3>Our Partners</h3>
-                <p class="subtitle">Local establishments keeping our community hydrated.</p>
-                <div class="partners-grid" id="partners-slideshow-container" style="display: flex; gap: 24px; overflow-x: auto; padding: 20px 0; justify-content: center; align-items: center;">
-                    <!-- Populated by JS Slideshow -->
-                    <p class="subtitle" id="no-partners-msg">Loading partners...</p>
-                </div>
-            </div>
-
-            <div class="cta-section text-center animate-up stagger-4">
-                <h3>Know a spot we missed?</h3>
-                <p>Help expand the Pawi network by adding new water fountains or friendly merchants to the map.</p>
-                <button class="btn-primary tab-link" data-target="add-view">Add a Location</button>
-            </div>
-
-            <footer class="site-footer">
-                <div class="footer-content">
-                    <div class="footer-brand">
-                        <h2 style="display: flex; align-items: center; gap: 8px;">
-                            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 21.5c-3.31 0-6-2.66-6-5.96 0-2.58 2.27-5.91 5.4-8.86l.6-.55.6.55c3.13 2.95 5.4 6.28 5.4 8.86 0 3.3-2.69 5.96-6 5.96z"/></svg>
-                            Pawi
-                        </h2>
-                        <p>A community-driven hydration map in support of the Pedestrian Pathway Safety Initiative, Quezon City.</p>
-                    </div>
-                    <div class="footer-links">
-                        <h4>Contact Us</h4>
-                        <ul>
-                            <li>Email: hello@pawi.ph</li>
-                            <li>Report an issue</li>
-                            <li>Partner with us</li>
-                        </ul>
+                <div class="content-section animate-up stagger-2">
+                    <div class="split-section">
+                        <div class="split-left"><div id="mini-map"></div></div>
+                        <div class="split-right">
+                            <h3>Water in your vicinity</h3>
+                            <p>Check out the hydration spots currently active near you. The map is updated daily by our community.</p>
+                            <button class="btn-primary tab-link" data-target="map-view">Explore Full Map</button>
+                        </div>
                     </div>
                 </div>
-                <div class="footer-bottom">
-                    <p>&copy; 2026 Pawi - Free Water PH. All rights reserved.</p>
+
+                <div class="content-section text-center animate-up stagger-3">
+                    <h3>Our Partners</h3>
+                    <p class="subtitle">Local establishments keeping our community hydrated.</p>
+                    <div class="partners-grid" id="partners-slideshow-container" style="display: flex; gap: 24px; overflow-x: auto; padding: 20px 0; justify-content: center; align-items: center;">
+                        <p class="subtitle" id="no-partners-msg">Loading partners...</p>
+                    </div>
                 </div>
-            </footer>
+
+                <div class="cta-section text-center animate-up stagger-4">
+                    <h3>Know a spot we missed?</h3>
+                    <p>Help expand the Pawi network by adding new water fountains or friendly merchants to the map.</p>
+                    <button class="btn-secondary tab-link" data-target="add-view" style="margin-top: 16px;">Add a Location</button>
+                </div>
+            </div>
         </section>
 
         <!-- FULL MAP MODULE -->
@@ -149,7 +145,6 @@
                 <p class="subtitle">Tap the map to set the coordinates. We will auto-detect the street for you.</p>
                 
                 <form id="add-location-form">
-                    
                     <div class="form-group">
                         <label>1. Pinpoint on Map</label>
                         <div id="contrib-map" style="height: 250px; border-radius: 12px; border: 2px solid var(--border-color); z-index: 1;"></div>
@@ -190,17 +185,14 @@
 
                     <fieldset class="location-details">
                         <legend>Detailed Address</legend>
-                        
                         <div class="form-group">
                             <label>Address Line 1 (Street, Building, Landmark)</label>
                             <input type="text" id="loc-line1" placeholder="Auto-filled by map tap..." required>
                         </div>
-
                         <div class="form-group">
                             <label>Address Line 2 (Floor, Room, Unit)</label>
                             <input type="text" id="loc-line2" placeholder="e.g. 2nd Floor, near Restrooms (Optional)">
                         </div>
-
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Province / Region</label>
@@ -215,7 +207,6 @@
                                 </select>
                             </div>
                         </div>
-
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Barangay</label>
@@ -253,22 +244,6 @@
                 </form>
             </div>
         </section>
-        
-        <!-- AUTH MODAL -->
-        <div id="auth-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-            <div class="card" style="width: 90%; max-width: 400px; padding: 32px; text-align: center;">
-                <h3 style="margin-bottom: 8px;">Sign in to Pawi</h3>
-                <p style="margin-bottom: 24px; color: var(--text-light);">Join the community to map free water across the city.</p>
-                
-                <button id="btn-google" class="btn-secondary" style="width: 100%; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <!-- Google SVG Icon -->
-                    <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                    Sign in with Google
-                </button>
-                
-                <button id="close-auth-btn" style="margin-top: 16px; width: 100%; background: none; border: none; color: var(--text-light); font-weight: 700; cursor: pointer;">Cancel</button>
-            </div>
-        </div>
 
         <!-- DASHBOARD MODULE -->
         <section id="dashboard-view" class="module bg-light">
@@ -315,6 +290,49 @@
                 </div>
             </div>
         </section>
+
+        <!-- GLOBAL FOOTER (Moved here so it shows on all views) -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h2 style="display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 21.5c-3.31 0-6-2.66-6-5.96 0-2.58 2.27-5.91 5.4-8.86l.6-.55.6.55c3.13 2.95 5.4 6.28 5.4 8.86 0 3.3-2.69 5.96-6 5.96z"/></svg>
+                        Pawi
+                    </h2>
+                    <p>A community-driven hydration map.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li>Email: rgrolle@up.edu.ph</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Renz Jared Rolle. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <!-- AUTH MODAL -->
+        <div id="auth-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div class="card" style="width: 90%; max-width: 400px; padding: 32px; text-align: center;">
+                <h3 style="margin-bottom: 8px;">Sign in to Pawi</h3>
+                <p style="margin-bottom: 24px; color: var(--text-light);">Join the community to map free water across the city.</p>
+                
+                <button id="btn-google" class="btn-secondary" style="width: 100%; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <!-- Google SVG Icon -->
+                    <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    Sign in with Google
+                </button>
+                
+                <!-- TRUST TEXT -->
+                <p style="font-size: 12px; color: var(--text-light); margin-top: 16px; line-height: 1.4;">
+                    🔒 For your security, authentication is securely routed through our database partner, <b>Supabase</b>. 
+                </p>
+
+                <button id="close-auth-btn" style="margin-top: 16px; width: 100%; background: none; border: none; color: var(--text-light); font-weight: 700; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

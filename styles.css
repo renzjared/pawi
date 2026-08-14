@@ -201,3 +201,96 @@ fieldset.location-details input { margin-bottom: 16px; }
 .popup-address { font-size: 14px; color: var(--text-main); font-weight: 700; margin: 0 0 12px 0; display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; }
 .popup-notes { font-size: 13px; color: var(--text-light); margin: 0 0 12px 0; background: var(--bg-page); padding: 12px; border-radius: 8px; font-style: italic; }
 .popup-image { width: 100%; height: 140px; object-fit: cover; border-bottom: 2px solid var(--border-color); }
+
+/* =========================================================
+   UNDERWATER THEME & WAVE ANIMATIONS
+   ========================================================= */
+
+/* Update the Hero to a lighter surface blue */
+.hero {
+    background: var(--primary-light); 
+    padding: 80px 32px 40px 32px;
+}
+.hero h2 { color: var(--primary-dark); }
+.hero p { color: var(--text-main); }
+.hero .floating-drop { color: var(--primary); }
+
+/* The Wave Separator */
+.wave-divider {
+    position: relative;
+    width: 100%;
+    height: 12vh;
+    min-height: 80px;
+    max-height: 120px;
+    background: var(--primary-light);
+    overflow: hidden;
+    line-height: 0;
+}
+.waves {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin-bottom: -7px; /* Fixes a tiny gap in Safari */
+}
+.parallax > use {
+    animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
+}
+.parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
+.parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
+.parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
+.parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; }
+
+@keyframes move-forever {
+    0% { transform: translate3d(-90px,0,0); }
+    100% { transform: translate3d(85px,0,0); }
+}
+
+/* The Underwater Section */
+.underwater-world {
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+    padding-bottom: 60px; /* Healthy spacing above the footer */
+}
+.underwater-world h3,
+.underwater-world p,
+.underwater-world .subtitle {
+    color: white !important;
+}
+
+/* Override cards inside the underwater section so text remains readable */
+.underwater-world .split-section {
+    background: white;
+}
+.underwater-world .split-section h3,
+.underwater-world .split-section p {
+    color: var(--text-main) !important;
+}
+
+.underwater-world .cta-section {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    margin: 40px auto 0 auto;
+    width: calc(100% - 64px);
+    max-width: 1200px;
+    padding: 60px 32px;
+}
+
+/* =========================================================
+   GLOBAL FOOTER & LAYOUT FIXES
+   ========================================================= */
+
+/* Make Map View fill the screen, allowing scrolling down to the footer */
+#map-view.module.active { 
+    display: flex !important; 
+    flex-direction: row; 
+    height: calc(100vh - 75px); /* Exactly viewport height minus navbar */
+}
+
+/* Standardize the footer layout */
+.site-footer { 
+    background-color: var(--bg-main); 
+    border-top: 2px solid var(--border-color); 
+    padding: 60px 32px 24px 32px; 
+    margin-top: 0; /* Removed the negative margin causing collisions */
+    width: 100%;
+}
