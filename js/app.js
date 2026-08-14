@@ -48,17 +48,66 @@ document.addEventListener('DOMContentLoaded', async () => {
         plotLocations(allLocations, currentFilters);
     };
 
-    // Attach listener to all dropdowns
+    // Attach listener to all filter dropdowns
     document.querySelectorAll('.filter-trigger').forEach(select => {
         select.addEventListener('change', window.triggerPlotting);
     });
 
-    // Live Supabase Form Submission
+    // AUTHENTICATION LOGIC (Google OAuth via Supabase)
+    const authModal = document.getElementById('auth-modal');
+    const loginBtn = document.getElementById('nav-login-btn');
+    let currentUser = null;
+
+    loginBtn.addEventListener('click', () => {
+        if (!currentUser) authModal.style.display = 'flex';
+        else alert("You are logged in! Your user ID is: " + currentUser.id);
+    });
+
+    document.getElementById('close-auth-btn').addEventListener('click', () => {
+        authModal.style.display = 'none';
+    });
+
+    // Trigger Google OAuth Flow
+    document.getElementById('btn-google').addEventListener('click', async () => {
+        const { data, error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin + window.location.pathname
+            }
+        });
+        if (error) alert("Authentication Error: " + error.message);
+    });
+
+    // Check existing session on load
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+            currentUser = session.user;
+            loginBtn.textContent = "My Account";
+        }
+    });
+
+    // Listen for OAuth redirect return (State Change)
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+            currentUser = session.user;
+            loginBtn.textContent = "My Account";
+            authModal.style.display = 'none';
+        }
+    });
+
+    // Live Supabase Form Submission (No Postal Code)
     const form = document.getElementById('add-location-form');
     const submitBtn = document.getElementById('submit-btn');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        // Ensure user is logged in before allowing submission
+        if (!currentUser) {
+            authModal.style.display = 'flex';
+            return alert("You must be signed in to add a hydration spot.");
+        }
+
         const coordsInput = document.getElementById('loc-coords');
         if (!coordsInput.dataset.lat) return alert("Please tap the map to pinpoint the location first.");
 
@@ -114,7 +163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Initial load
+    // Initial load of map pins
     try {
         allLocations = await fetchAllLocations(); 
         window.triggerPlotting();
