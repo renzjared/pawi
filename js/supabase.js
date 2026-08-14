@@ -31,15 +31,23 @@ async function fetchAllLocations() {
 }
 
 // Gamification & Profiles
-async function awardXP(userId, amount) {
-    const { data } = await supabaseClient.from('user_profiles').select('xp').eq('id', userId).single();
-    const newXp = (data?.xp || 0) + amount;
-    await supabaseClient.from('user_profiles').update({ xp: newXp }).eq('id', userId);
+async function getUserProfile(userId) {
+    // maybeSingle() prevents crashes if the row is missing
+    const { data, error } = await supabaseClient.from('user_profiles').select('*').eq('id', userId).maybeSingle();
+    
+    // Auto-Heal: If the profile is missing (happens for older accounts), create it now
+    if (!data) {
+        await supabaseClient.from('user_profiles').upsert([{ id: userId, xp: 0 }]);
+        return { xp: 0 };
+    }
+    return data;
 }
 
-async function getUserProfile(userId) {
-    const { data } = await supabaseClient.from('user_profiles').select('*').eq('id', userId).single();
-    return data;
+async function awardXP(userId, amount) {
+    const profile = await getUserProfile(userId);
+    const newXp = (profile.xp || 0) + amount;
+    // upsert ensures we update it securely
+    await supabaseClient.from('user_profiles').upsert({ id: userId, xp: newXp });
 }
 
 // Interactions (Votes & Comments)

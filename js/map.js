@@ -156,17 +156,49 @@ function plotLocations(locations, filters = { access: 'all', type: 'all', settin
         
         // Build Rich Popup formatting
         let addressText = [loc.address_line1, loc.address_line2, loc.barangay, loc.city].filter(Boolean).join(', ');
+
+        const score = loc.votes ? loc.votes.reduce((sum, v) => sum + v.vote_value, 0) : 0;
+        const commentsHtml = loc.comments && loc.comments.length > 0 
+            ? loc.comments.map(c => `<div style="background:var(--bg-page); padding:6px 10px; border-radius:6px; margin-bottom:6px; font-size:12px; line-height:1.4;">${c.content}</div>`).join('')
+            : '<p style="font-size:12px; color:var(--text-light); font-style:italic; margin:0;">No comments yet. Be the first!</p>';
+
+        // 3. Build the Rich Popup with UI
         const popupContent = `
             ${loc.image_url ? `<img src="${loc.image_url}" class="popup-image" alt="Location Photo">` : ''}
             <div class="popup-details">
-                <h3>${loc.name}</h3>
+                
+                <!-- Header with Upvote/Downvote -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <h3 style="margin: 0; padding-right: 12px; line-height: 1.1;">${loc.name}</h3>
+                    
+                    <div style="display: flex; align-items: center; gap: 6px; background: var(--bg-page); padding: 4px 8px; border-radius: 20px; border: 1px solid var(--border-color);">
+                        <button onclick="window.handleVote('${loc.id}', 1)" style="border:none; background:none; cursor:pointer; color:var(--primary); font-size:16px; padding:0;">▲</button>
+                        <span style="font-weight:800; font-size:14px; color:var(--text-main); min-width:14px; text-align:center;">${score}</span>
+                        <button onclick="window.handleVote('${loc.id}', -1)" style="border:none; background:none; cursor:pointer; color:#FF4B4B; font-size:16px; padding:0;">▼</button>
+                    </div>
+                </div>
+
                 <div class="popup-badges">
                     <span class="badge ${badgeClass}">${loc.access}</span>
                     <span class="popup-badge">${loc.type}</span>
-                    <span class="popup-badge">${loc.indoor_outdoor || 'Unknown Setting'}</span>
                 </div>
+                
                 <p class="popup-address">${pinSvg} <span>${addressText}</span></p>
                 ${loc.notes ? `<p class="popup-notes">"${loc.notes}"</p>` : ''}
+                
+                <!-- Comments Section -->
+                <div style="margin-top: 16px; border-top: 2px solid var(--border-color); padding-top: 12px;">
+                    <h4 style="font-size:14px; color:var(--primary-dark); font-weight:800; margin:0 0 8px 0;">Community Notes</h4>
+                    
+                    <div style="max-height: 120px; overflow-y: auto; margin-bottom: 12px;">
+                        ${commentsHtml}
+                    </div>
+                    
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="comment-input-${loc.id}" placeholder="Add a tip..." style="flex:1; padding:8px; border:2px solid var(--border-color); border-radius:8px; font-size:12px; font-family:'Nunito', sans-serif;">
+                        <button onclick="window.handleComment('${loc.id}')" class="btn-primary" style="padding:8px 12px; font-size:12px;">Post</button>
+                    </div>
+                </div>
             </div>
         `;
 
