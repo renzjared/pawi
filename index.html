@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pawi: Free Water</title>
+    <title>Pawi - Free Water PH</title>
     
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -26,7 +22,6 @@
     <main id="main-content">
         <!-- LANDING PAGE MODULE -->
         <section id="landing-view" class="module active">
-            <!-- Hero Section -->
             <div class="hero animate-up">
                 <div class="hero-content">
                     <div class="hero-badge">Beta</div>
@@ -39,7 +34,6 @@
                 </div>
             </div>
 
-            <!-- UN SDGs Section -->
             <div class="content-section text-center bg-light animate-up stagger-1">
                 <h3>Our Commitment</h3>
                 <p class="subtitle">Building a sustainable, walkable city aligned with global goals.</p>
@@ -50,12 +44,9 @@
                 </div>
             </div>
 
-            <!-- Mini Map Section -->
             <div class="content-section animate-up stagger-2">
                 <div class="split-section">
-                    <div class="split-left">
-                        <div id="mini-map"></div>
-                    </div>
+                    <div class="split-left"><div id="mini-map"></div></div>
                     <div class="split-right">
                         <h3>Water in your vicinity</h3>
                         <p>Check out the hydration spots currently active near you. The map is updated daily by our community.</p>
@@ -64,7 +55,6 @@
                 </div>
             </div>
 
-            <!-- Partners Section -->
             <div class="content-section text-center animate-up stagger-3">
                 <h3>Our Partners</h3>
                 <p class="subtitle">Local establishments keeping our community hydrated.</p>
@@ -75,14 +65,12 @@
                 </div>
             </div>
 
-            <!-- Contribute CTA -->
             <div class="cta-section text-center animate-up stagger-4">
                 <h3>Know a spot we missed?</h3>
                 <p>Help expand the Pawi network by adding new water fountains or friendly merchants to the map.</p>
                 <button class="btn-primary tab-link" data-target="add-view">Add a Location</button>
             </div>
 
-            <!-- Footer -->
             <footer class="site-footer">
                 <div class="footer-content">
                     <div class="footer-brand">
@@ -107,7 +95,6 @@
         <!-- FULL MAP MODULE -->
         <section id="map-view" class="module">
             <aside class="map-sidebar">
-                <!-- Location Entry Search for Browsing Map -->
                 <div class="map-search-container">
                     <input type="text" id="map-search-input" placeholder="Search for a city or street...">
                     <button id="map-search-btn" class="btn-primary">Go</button>
@@ -134,26 +121,19 @@
         <section id="add-view" class="module bg-light">
             <div class="card animate-up">
                 <h2>Add a Hydration Spot</h2>
-                <p class="subtitle">Tap the map to set the coordinates, then fill in the details.</p>
+                <p class="subtitle">Tap the map to set the coordinates. We will auto-detect the street for you.</p>
                 
                 <form id="add-location-form">
                     
-                    <!-- Search field to quickly jump on the contribute map -->
                     <div class="form-group">
-                        <label>General Location</label>
-                        <input type="text" id="loc-search" placeholder="e.g. Quezon City, Diliman">
-                    </div>
-
-                    <!-- Map specifically for picking location -->
-                    <div class="form-group">
-                        <label>Pinpoint on Map</label>
+                        <label>1. Pinpoint on Map</label>
                         <div id="contrib-map" style="height: 250px; border-radius: 12px; border: 2px solid var(--border-color); z-index: 1;"></div>
-                        <input type="text" id="loc-coords" placeholder="Coordinates will appear here" readonly required style="margin-top: 8px; background: #EEE; cursor: not-allowed;">
+                        <input type="text" id="loc-coords" placeholder="Coordinates will appear here" readonly required style="margin-top: 8px; background: #EEE; cursor: not-allowed; font-size: 14px;">
                     </div>
 
                     <div class="form-group">
-                        <label>Location Name</label>
-                        <input type="text" id="loc-name" placeholder="e.g. Quezon Memorial Fountain" required>
+                        <label>2. Specific Spot Name</label>
+                        <input type="text" id="loc-name" placeholder="e.g. Quezon Memorial Drinking Fountain" required>
                     </div>
 
                     <div class="form-row">
@@ -167,40 +147,63 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Setting</label>
-                            <select id="loc-setting">
-                                <option value="Indoor">Indoor</option>
-                                <option value="Outdoor">Outdoor</option>
+                            <label>Access</label>
+                            <select id="loc-access">
+                                <option value="Public">Public (Anyone)</option>
+                                <option value="Customers Only">Customers Only</option>
+                                <option value="Restricted">Restricted</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Access</label>
-                        <select id="loc-access">
-                            <option value="Public">Public (Anyone)</option>
-                            <option value="Customers Only">Customers Only</option>
-                            <option value="Restricted">Restricted</option>
-                        </select>
-                    </div>
-
                     <fieldset class="location-details">
-                        <legend>Address Details</legend>
-                        <input type="text" id="loc-building" placeholder="Building / Mall Name (Optional)">
+                        <legend>Detailed Address</legend>
+                        
+                        <div class="form-group">
+                            <label>Address Line 1 (Street, Building, Landmark)</label>
+                            <input type="text" id="loc-line1" placeholder="Auto-filled by map tap..." required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Address Line 2 (Floor, Room, Unit)</label>
+                            <input type="text" id="loc-line2" placeholder="e.g. 2nd Floor, near Restrooms (Optional)">
+                        </div>
+
                         <div class="form-row">
-                            <input type="text" id="loc-floor" placeholder="Floor Level">
-                            <input type="text" id="loc-street" placeholder="Street Name">
+                            <div class="form-group">
+                                <label>Province / Region</label>
+                                <select id="loc-province" required>
+                                    <option value="">Loading Provinces...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>City / Municipality</label>
+                                <select id="loc-city" required disabled>
+                                    <option value="">Select Province First</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Barangay</label>
+                                <select id="loc-barangay" required disabled>
+                                    <option value="">Select City First</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Postal Code</label>
+                                <select id="loc-postal" required>
+                                    <option value="">Select / Type...</option>
+                                    <!-- Using standard text input behavior via datalist emulation/simple select fallback -->
+                                </select>
+                            </div>
                         </div>
                     </fieldset>
 
                     <div class="form-group">
-                        <label>Photo Proof (Optional for now)</label>
-                        <input type="file" id="loc-image" accept="image/*">
-                    </div>
-
-                    <div class="form-group">
                         <label>Notes / Instructions</label>
-                        <textarea id="loc-notes" placeholder="e.g. Bring your own tumbler, near the restrooms." rows="3"></textarea>
+                        <textarea id="loc-notes" placeholder="e.g. Bring your own tumbler." rows="2"></textarea>
                     </div>
 
                     <button type="submit" id="submit-btn" class="btn-primary">Submit Location</button>
@@ -210,10 +213,7 @@
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/storage.js"></script> -->
+    <script src="js/ph-address.js"></script>
     <script src="js/map.js"></script>
     <script src="js/app.js"></script>
 </body>

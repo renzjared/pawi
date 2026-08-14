@@ -21,20 +21,42 @@ function createCustomIcon(access) {
     });
 }
 
+// Reverse Geocoding to get address details from map tap
+async function autoFillAddress(lat, lng) {
+    const line1Input = document.getElementById('loc-line1');
+    line1Input.value = "Detecting address...";
+    
+    try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+        const data = await response.json();
+        
+        if (data && data.address) {
+            // Build a sensible Address Line 1 from OSM data
+            const building = data.address.building || data.address.amenity || '';
+            const street = data.address.road || '';
+            const parts = [building, street].filter(Boolean);
+            
+            line1Input.value = parts.join(', ') || "Address not found automatically";
+        } else {
+            line1Input.value = "";
+        }
+    } catch (error) {
+        console.error("Reverse geocoding failed", error);
+        line1Input.value = "";
+    }
+}
+
 function initMaps() {
     const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-    // 1. Mini Map (Home Page)
     miniMap = L.map('mini-map', { zoomControl: false, scrollWheelZoom: false }).setView(userCoords, 14);
     L.tileLayer(tileUrl).addTo(miniMap);
     markerLayerMini = L.layerGroup().addTo(miniMap);
 
-    // 2. Full Map (Map Page)
     fullMap = L.map('full-map').setView(userCoords, 14);
     L.tileLayer(tileUrl).addTo(fullMap);
     markerLayerFull = L.layerGroup().addTo(fullMap);
 
-    // 3. Contribute Map (Form Page)
     contribMap = L.map('contrib-map').setView(userCoords, 14);
     L.tileLayer(tileUrl).addTo(contribMap);
     
@@ -48,9 +70,11 @@ function initMaps() {
         coordsInput.dataset.lng = e.latlng.lng;
         coordsInput.style.background = '#FFFFFF';
         coordsInput.style.borderColor = '#1CB0F6';
+
+        // Trigger Reverse Geocoding
+        autoFillAddress(e.latlng.lat, e.latlng.lng);
     });
 
-    // Try to get GPS Location
     fullMap.locate({setView: false, maxZoom: 15});
     fullMap.on('locationfound', function(e) {
         userCoords = [e.latlng.lat, e.latlng.lng];
@@ -65,7 +89,6 @@ function initMaps() {
     });
 }
 
-// Function to use Free OpenStreetMap Geocoding
 async function geocodeLocation(query, targetMap) {
     if (!query) return;
     try {
@@ -73,9 +96,7 @@ async function geocodeLocation(query, targetMap) {
         const data = await response.json();
         
         if (data && data.length > 0) {
-            const lat = parseFloat(data[0].lat);
-            const lon = parseFloat(data[0].lon);
-            targetMap.setView([lat, lon], 15);
+            targetMap.setView([parseFloat(data[0].lat), parseFloat(data[0].lon)], 15);
         } else {
             alert("Location not found. Try adding a city name.");
         }

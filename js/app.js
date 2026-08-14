@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     initMaps();
 
-    // Routing Logic (Handles Navbar tabs AND buttons on the page)
     const routeLinks = document.querySelectorAll('.tab-link');
     const modules = document.querySelectorAll('.module');
     const navBtns = document.querySelectorAll('.tab-btn');
@@ -11,50 +10,74 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             const targetId = link.dataset.target;
 
-            // Update Navbar Active State
             navBtns.forEach(b => b.classList.remove('active'));
             const matchingNavBtn = document.querySelector(`.tab-btn[data-target="${targetId}"]`);
             if (matchingNavBtn) matchingNavBtn.classList.add('active');
 
-            // Switch Modules
             modules.forEach(m => m.classList.remove('active'));
             document.getElementById(targetId).classList.add('active');
             
-            // Critical fix for Leaflet Map Sizing when container becomes visible
             setTimeout(() => {
                 if (targetId === 'map-view') fullMap.invalidateSize();
                 if (targetId === 'landing-view') miniMap.invalidateSize();
                 if (targetId === 'add-view') contribMap.invalidateSize();
             }, 100);
             
-            // Scroll to top
             document.getElementById('main-content').scrollTo(0,0);
         });
     });
 
-    // Map View Search Listener
     document.getElementById('map-search-btn').addEventListener('click', () => {
         const query = document.getElementById('map-search-input').value;
         geocodeLocation(query, fullMap);
     });
     
-    // Support pressing "Enter" on Map View search
     document.getElementById('map-search-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            geocodeLocation(e.target.value, fullMap);
-        }
+        if (e.key === 'Enter') geocodeLocation(e.target.value, fullMap);
     });
 
-    // Filter Logic
     document.getElementById('filter-access').addEventListener('change', (e) => {
         plotLocations(allLocations, e.target.value);
     });
 
-    // Uncomment when Database is connected
-    try {
-        allLocations = await fetchAllLocations(); 
-        plotLocations(allLocations, 'all');
-    } catch (error) {
-        console.error('Failed to load map pins:', error);
-    }
+    // --- NEW: FORM SUBMISSION & LOCAL SAVING ---
+    const form = document.getElementById('add-location-form');
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const coordsInput = document.getElementById('loc-coords');
+        if (!coordsInput.dataset.lat) {
+            alert("Please tap the map to pinpoint the location first.");
+            return;
+        }
+
+        // Create a local mock object
+        const newLocation = {
+            id: Date.now(),
+            name: document.getElementById('loc-name').value,
+            type: document.getElementById('loc-type').value,
+            access: document.getElementById('loc-access').value,
+            street: document.getElementById('loc-line1').value,
+            lat: parseFloat(coordsInput.dataset.lat),
+            lng: parseFloat(coordsInput.dataset.lng)
+        };
+
+        // Add to our active session array and re-render the map
+        allLocations.push(newLocation);
+        plotLocations(allLocations, document.getElementById('filter-access').value);
+
+        alert("Hydration spot added successfully! It is now visible on the map.");
+        
+        // Reset form and jump to map view
+        form.reset();
+        coordsInput.dataset.lat = '';
+        coordsInput.dataset.lng = '';
+        document.querySelector('.tab-btn[data-target="map-view"]').click();
+        
+        // Center full map on the new location
+        setTimeout(() => {
+            fullMap.setView([newLocation.lat, newLocation.lng], 16);
+        }, 200);
+    });
+
 });
