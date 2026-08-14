@@ -157,24 +157,44 @@ function plotLocations(locations, filters = { access: 'all', type: 'all', settin
         // Build Rich Popup formatting
         let addressText = [loc.address_line1, loc.address_line2, loc.barangay, loc.city].filter(Boolean).join(', ');
 
+// 1. Pre-calculate dynamic state
+        const currentUserId = window.currentUser ? window.currentUser.id : null;
+        const myVote = loc.votes ? (loc.votes.find(v => v.user_id === currentUserId)?.vote_value || 0) : 0;
         const score = loc.votes ? loc.votes.reduce((sum, v) => sum + v.vote_value, 0) : 0;
-        const commentsHtml = loc.comments && loc.comments.length > 0 
-            ? loc.comments.map(c => `<div style="background:var(--bg-page); padding:6px 10px; border-radius:6px; margin-bottom:6px; font-size:12px; line-height:1.4;">${c.content}</div>`).join('')
-            : '<p style="font-size:12px; color:var(--text-light); font-style:italic; margin:0;">No comments yet. Be the first!</p>';
+        
+        // 2. Build the Comments HTML
+        let commentsHtml = '';
+        if (loc.comments && loc.comments.length > 0) {
+            commentsHtml = loc.comments.map(c => {
+                const author = c.user_id === currentUserId ? "You" : (c.user_id ? "Water Scout" : "Guest");
+                const timeStr = new Date(c.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                return `
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author">${author}</span>
+                            <span>${timeStr}</span>
+                        </div>
+                        <div>${c.content}</div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            commentsHtml = '<p class="no-comments" style="font-size:12px; color:var(--text-light); font-style:italic; margin:0;">No comments yet. Be the first!</p>';
+        }
 
-        // 3. Build the Rich Popup with UI
+        // 3. Build the Rich Popup with strict IDs for DOM Manipulation
         const popupContent = `
             ${loc.image_url ? `<img src="${loc.image_url}" class="popup-image" alt="Location Photo">` : ''}
             <div class="popup-details">
                 
-                <!-- Header with Upvote/Downvote -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                     <h3 style="margin: 0; padding-right: 12px; line-height: 1.1;">${loc.name}</h3>
                     
+                    <!-- UPVOTE / DOWNVOTE UI -->
                     <div style="display: flex; align-items: center; gap: 6px; background: var(--bg-page); padding: 4px 8px; border-radius: 20px; border: 1px solid var(--border-color);">
-                        <button onclick="window.handleVote('${loc.id}', 1)" style="border:none; background:none; cursor:pointer; color:var(--primary); font-size:16px; padding:0;">▲</button>
-                        <span style="font-weight:800; font-size:14px; color:var(--text-main); min-width:14px; text-align:center;">${score}</span>
-                        <button onclick="window.handleVote('${loc.id}', -1)" style="border:none; background:none; cursor:pointer; color:#FF4B4B; font-size:16px; padding:0;">▼</button>
+                        <button id="upvote-${loc.id}" class="vote-btn ${myVote === 1 ? 'active-up' : ''}" onclick="window.handleVote('${loc.id}', 1)">▲</button>
+                        <span id="score-${loc.id}" style="font-weight:800; font-size:14px; color:var(--text-main); min-width:14px; text-align:center;">${score}</span>
+                        <button id="downvote-${loc.id}" class="vote-btn ${myVote === -1 ? 'active-down' : ''}" onclick="window.handleVote('${loc.id}', -1)">▼</button>
                     </div>
                 </div>
 
@@ -186,16 +206,17 @@ function plotLocations(locations, filters = { access: 'all', type: 'all', settin
                 <p class="popup-address">${pinSvg} <span>${addressText}</span></p>
                 ${loc.notes ? `<p class="popup-notes">"${loc.notes}"</p>` : ''}
                 
-                <!-- Comments Section -->
+                <!-- COMMENTS UI -->
                 <div style="margin-top: 16px; border-top: 2px solid var(--border-color); padding-top: 12px;">
                     <h4 style="font-size:14px; color:var(--primary-dark); font-weight:800; margin:0 0 8px 0;">Community Notes</h4>
                     
-                    <div style="max-height: 120px; overflow-y: auto; margin-bottom: 12px;">
+                    <div id="comments-list-${loc.id}" style="max-height: 140px; overflow-y: auto; margin-bottom: 12px; padding-right: 4px;">
                         ${commentsHtml}
                     </div>
                     
                     <div style="display:flex; gap:6px;">
-                        <input type="text" id="comment-input-${loc.id}" placeholder="Add a tip..." style="flex:1; padding:8px; border:2px solid var(--border-color); border-radius:8px; font-size:12px; font-family:'Nunito', sans-serif;">
+                        <!-- Added an onkeypress so users can hit Enter to submit -->
+                        <input type="text" id="comment-input-${loc.id}" placeholder="Add a tip..." style="flex:1; padding:8px; border:2px solid var(--border-color); border-radius:8px; font-size:12px; font-family:'Nunito', sans-serif;" onkeypress="if(event.key === 'Enter') window.handleComment('${loc.id}')">
                         <button onclick="window.handleComment('${loc.id}')" class="btn-primary" style="padding:8px 12px; font-size:12px;">Post</button>
                     </div>
                 </div>

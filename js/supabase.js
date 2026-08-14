@@ -18,12 +18,11 @@ async function saveLocationToDB(data) {
 }
 
 async function fetchAllLocations() {
-    // We fetch locations, plus the sum of votes
     const { data, error } = await supabaseClient
         .from('water_locations')
         .select(`
             *, lat, lng,
-            votes ( vote_value ),
+            votes ( vote_value, user_id ),
             comments ( id, content, created_at, user_id )
         `);
     if (error) throw error;
@@ -59,14 +58,22 @@ async function submitVote(locationId, userId, voteValue) {
     if (error) throw error;
 }
 
-async function submitComment(locationId, userId, content) {
-    const { error } = await supabaseClient.from('comments').insert([
-        { location_id: locationId, user_id: userId, content: content }
-    ]);
+async function removeVote(locationId, userId) {
+    const { error } = await supabaseClient.from('votes')
+        .delete()
+        .match({ location_id: locationId, user_id: userId });
     if (error) throw error;
-    if (userId) await awardXP(userId, 10); // 10 XP for commenting
 }
 
+async function submitComment(locationId, userId, content) {
+    // We add .select() to return the newly created row (so we get the timestamp)
+    const { data, error } = await supabaseClient.from('comments').insert([
+        { location_id: locationId, user_id: userId, content: content }
+    ]).select();
+    if (error) throw error;
+    if (userId) await awardXP(userId, 10); // 10 XP for commenting
+    return data[0]; 
+}
 // Partners (Admin)
 async function fetchPartners() {
     const { data } = await supabaseClient.from('partners').select('*').eq('is_active', true);

@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function handleAuthChange(session) {
         if (session) {
             currentUser = session.user;
+            window.currentUser = currentUser; // Make globally accessible
             loginBtn.textContent = "Dashboard";
             authModal.style.display = 'none';
             
@@ -92,36 +93,112 @@ document.addEventListener('DOMContentLoaded', async () => {
     supabaseClient.auth.onAuthStateChange((event, session) => handleAuthChange(session));
 
     // --- MAP INTERACTIONS (VOTING & COMMENTS) ---
-    window.triggerPlotting = () => {
-        const currentFilters = {
-            access: document.getElementById('filter-access').value,
-            type: document.getElementById('filter-type').value,
-            setting: document.getElementById('filter-setting').value
-        };
-        plotLocations(allLocations, currentFilters);
+    // Toast Notification System
+    window.showToast = (msg) => {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10); // Slight delay for animation
+        setTimeout(() => { 
+            toast.classList.remove('show'); 
+            setTimeout(() => toast.remove(), 300); 
+        }, 3000);
     };
 
-    document.querySelectorAll('.filter-trigger').forEach(select => select.addEventListener('change', window.triggerPlotting));
-
     window.handleVote = async (locId, value) => {
-        if (!currentUser) return alert("You must log in to vote.");
+        if (!window.currentUser) return showToast("You must log in to vote.");
+        
+        // Find in-memory location & buttons
+        const loc = allLocations.find(l => l.id === locId);
+        if (!loc.votes) loc.votes = [];
+        const userId = window.currentUser.id;
+        
+        let myVoteObj = loc.votes.find(v => v.user_id === userId);
+        let currentVote = myVoteObj ? myVoteObj.vote_value : 0;
+        
+        const upBtn = document.getElementById(`upvote-${locId}`);
+        const downBtn = document.getElementById(`downvote-${locId}`);
+        const scoreSpan = document.getElementById(`score-${locId}`);
+        let currentScore = parseInt(scoreSpan.textContent);
+        
         try {
-            await submitVote(locId, currentUser.id, value);
-            alert("Vote registered!");
-            allLocations = await fetchAllLocations();
-            window.triggerPlotting();
-        } catch (e) { alert(e.message); }
+            if (currentVote === value) {
+                // TOGGLE OFF: User clicked the same vote again
+                await removeVote(locId, userId);
+                loc.votes = loc.votes.filter(v => v.user_id !== userId); // Update memory
+                currentScore -= value;
+                upBtn.classList.remove('active-up');
+                downBtn.classList.remove('active-down');
+            } else {
+                // SWITCH or NEW VOTE
+                await submitVote(locId, userId, value);
+                if (myVoteObj) {
+                    myVoteObj.vote_value = value;
+                    currentScore += (value * 2); // Going from -1 to 1 is a jump of 2
+                } else {
+                    loc.votes.push({ user_id: userId, vote_value: value });
+                    currentScore += value;
+                }
+                
+                // Update active classes
+                if (value === 1) {
+                    upBtn.classList.add('active-up');
+                    downBtn.classList.remove('active-down');
+                } else {
+                    upBtn.classList.remove('active-up');
+                    downBtn.classList.add('active-down');
+                }
+            }
+            scoreSpan.textContent = currentScore; // Instantly update HTML
+        } catch (e) {
+            showToast("Error updating vote: " + e.message);
+        }
     };
 
     window.handleComment = async (locId) => {
         const input = document.getElementById(`comment-input-${locId}`);
-        if (!input.value.trim()) return;
+        const content = input.value.trim();
+        if (!content) return;
+        
+        input.disabled = true; // Prevent double-clicking
+        
         try {
-            await submitComment(locId, currentUser?.id || null, input.value.trim());
-            alert("Comment added!");
-            allLocations = await fetchAllLocations();
-            window.triggerPlotting();
-        } catch (e) { alert(e.message); }
+            const newComment = await submitComment(locId, window.currentUser?.id || null, content);
+            
+            // Update memory
+            const loc = allLocations.find(l => l.id === locId);
+            if (!loc.comments) loc.comments = [];
+            loc.comments.push(newComment);
+            
+            // Render to DOM directly
+            const list = document.getElementById(`comments-list-${locId}`);
+            const placeholder = list.querySelector('.no-comments');
+            if (placeholder) placeholder.remove();
+            
+            const authorName = window.currentUser ? "You" : "Guest";
+            const timeString = new Date(newComment.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            
+            const commentHtml = `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">${authorName}</span>
+                        <span>${timeString}</span>
+                    </div>
+                    <div>${newComment.content}</div>
+                </div>
+            `;
+            
+            list.insertAdjacentHTML('beforeend', commentHtml);
+            list.scrollTop = list.scrollHeight; // Auto-scroll to the new comment
+            
+            input.value = '';
+            showToast("Comment posted!");
+        } catch (e) {
+            showToast("Error: " + e.message);
+        } finally {
+            input.disabled = false;
+        }
     };
 
     // --- PARTNERS SLIDESHOW & ADMIN ---
