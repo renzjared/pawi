@@ -88,7 +88,12 @@ function initMaps() {
         autoFillAddress(e.latlng.lat, e.latlng.lng);
     });
 
-    fullMap.locate({setView: false, maxZoom: 15});
+    fullMap.locate({
+        setView: false, 
+        maxZoom: 15, 
+        enableHighAccuracy: true, /* Forces device GPS over Wi-Fi guessing */
+        timeout: 10000 /* Gives the browser 10 seconds to find the exact pin */
+    });
     fullMap.on('locationfound', function(e) {
         userCoords = [e.latlng.lat, e.latlng.lng]; // Update global center point
         miniMap.setView(userCoords, 14);
@@ -103,7 +108,6 @@ function initMaps() {
         if(allLocations.length > 0) window.triggerPlotting();
     });
 }
-// ... [End kept block] ...
 
 async function geocodeLocation(query, targetMap) {
     if (!query) return;
