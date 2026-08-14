@@ -1,15 +1,14 @@
-let miniMap, fullMap;
-let markerLayerMini, markerLayerFull;
+let miniMap, fullMap, contribMap;
+let markerLayerMini, markerLayerFull, contribMarker;
 let allLocations = [];
 
-// Fallback to Quezon City coordinates before GPS kicks in
 const defaultCoords = [14.6760, 121.0437]; 
 let userCoords = defaultCoords;
 
 function getMarkerColor(access) {
-    if (access === 'Public') return '#58CC02'; // Green
-    if (access === 'Customers Only') return '#FF9600'; // Orange
-    return '#FF4B4B'; // Red for Restricted or Others
+    if (access === 'Public') return '#58CC02'; 
+    if (access === 'Customers Only') return '#FF9600'; 
+    return '#FF4B4B'; 
 }
 
 function createCustomIcon(access) {
@@ -17,31 +16,72 @@ function createCustomIcon(access) {
     return L.divIcon({
         className: 'custom-marker-icon',
         html: `<div class="custom-marker" style="background-color: ${color};"></div>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12]
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
     });
 }
 
 function initMaps() {
-    // 1. Initialize Mini Map
-    miniMap = L.map('mini-map', { zoomControl: false }).setView(userCoords, 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(miniMap);
+    const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+    // 1. Mini Map (Home Page)
+    miniMap = L.map('mini-map', { zoomControl: false, scrollWheelZoom: false }).setView(userCoords, 14);
+    L.tileLayer(tileUrl).addTo(miniMap);
     markerLayerMini = L.layerGroup().addTo(miniMap);
 
-    // 2. Initialize Full Map
+    // 2. Full Map (Map Page)
     fullMap = L.map('full-map').setView(userCoords, 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(fullMap);
+    L.tileLayer(tileUrl).addTo(fullMap);
     markerLayerFull = L.layerGroup().addTo(fullMap);
 
-    // Geolocation to center on user
-    fullMap.locate({setView: true, maxZoom: 15});
+    // 3. Contribute Map (Form Page)
+    contribMap = L.map('contrib-map').setView(userCoords, 14);
+    L.tileLayer(tileUrl).addTo(contribMap);
+    
+    contribMap.on('click', function(e) {
+        if (contribMarker) contribMap.removeLayer(contribMarker);
+        contribMarker = L.marker(e.latlng).addTo(contribMap);
+        
+        const coordsInput = document.getElementById('loc-coords');
+        coordsInput.value = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
+        coordsInput.dataset.lat = e.latlng.lat;
+        coordsInput.dataset.lng = e.latlng.lng;
+        coordsInput.style.background = '#FFFFFF';
+        coordsInput.style.borderColor = '#1CB0F6';
+    });
+
+    // Try to get GPS Location
+    fullMap.locate({setView: false, maxZoom: 15});
     fullMap.on('locationfound', function(e) {
         userCoords = [e.latlng.lat, e.latlng.lng];
         miniMap.setView(userCoords, 14);
+        fullMap.setView(userCoords, 14);
+        contribMap.setView(userCoords, 14);
         
-        // Add a simple blue dot for the user
-        L.circleMarker(e.latlng, { radius: 6, fillColor: "#1CB0F6", color: "#FFFFFF", weight: 2, fillOpacity: 1 }).addTo(fullMap).addTo(miniMap);
+        const userDotOptions = { radius: 8, fillColor: "#1CB0F6", color: "#FFFFFF", weight: 3, fillOpacity: 1 };
+        L.circleMarker(e.latlng, userDotOptions).addTo(fullMap);
+        L.circleMarker(e.latlng, userDotOptions).addTo(miniMap);
+        L.circleMarker(e.latlng, userDotOptions).addTo(contribMap);
     });
+}
+
+// Function to use Free OpenStreetMap Geocoding
+async function geocodeLocation(query, targetMap) {
+    if (!query) return;
+    try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=ph`);
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+            targetMap.setView([lat, lon], 15);
+        } else {
+            alert("Location not found. Try adding a city name.");
+        }
+    } catch (error) {
+        console.error("Geocoding failed:", error);
+    }
 }
 
 function plotLocations(locations, filter = 'all') {
@@ -56,7 +96,6 @@ function plotLocations(locations, filter = 'all') {
         const icon = createCustomIcon(loc.access);
         const badgeClass = loc.access === 'Public' ? 'public' : (loc.access === 'Customers Only' ? 'customers' : 'restricted');
         
-        // Popup Content
         const popupContent = `
             <div style="font-family: 'Nunito', sans-serif;">
                 <h3 style="color:#1CB0F6; margin:0 0 5px 0;">${loc.name}</h3>
@@ -65,23 +104,19 @@ function plotLocations(locations, filter = 'all') {
             </div>
         `;
 
-        // Add to Maps
         L.marker([loc.lat, loc.lng], { icon: icon }).bindPopup(popupContent).addTo(markerLayerFull);
         L.marker([loc.lat, loc.lng], { icon: icon }).addTo(markerLayerMini);
 
-        // Add to Sidebar List
         const card = document.createElement('div');
         card.className = 'loc-card';
         card.innerHTML = `
             <h4>${loc.name}</h4>
             <span class="badge ${badgeClass}">${loc.access}</span>
-            <p style="font-size:14px; margin:0; color:#777;">📍 ${loc.building || loc.street || 'View on map'}</p>
+            <p style="font-size:14px; margin:0; color:#777; font-weight: 700;">📍 ${loc.building || loc.street || 'View on map'}</p>
         `;
         
-        // Clicking a card zooms the full map to that location
         card.addEventListener('click', () => {
             fullMap.setView([loc.lat, loc.lng], 17);
-            // Optionally open the popup here
         });
 
         listContainer.appendChild(card);

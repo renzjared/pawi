@@ -15,74 +15,103 @@
 </head>
 <body>
     <header class="navbar">
-        <h1>💧 Pawi>
+        <a href="#" class="brand-logo tab-link" data-target="landing-view">💧 Pawi</a>
         <div class="tabs">
-            <button class="tab-btn active" data-target="landing-view">Home</button>
-            <button class="tab-btn" data-target="map-view">Map</button>
-            <button class="tab-btn" data-target="add-view">Contribute</button>
+            <button class="tab-btn active tab-link" data-target="landing-view">Home</button>
+            <button class="tab-btn tab-link" data-target="map-view">Map</button>
+            <button class="tab-btn tab-link" data-target="add-view">Contribute</button>
         </div>
     </header>
 
-    <main>
+    <main id="main-content">
         <!-- LANDING PAGE MODULE -->
         <section id="landing-view" class="module active">
             <!-- Hero Section -->
-            <div class="hero">
-                <h2>Quench your thirst, save the planet.</h2>
-                <p>Find free drinking water and refill stations across the Philippines.</p>
-                <button class="btn-primary" onclick="document.querySelector('[data-target=\'map-view\']').click()">Find Water Near Me</button>
-            </div>
-
-            <!-- About Section -->
-            <div class="content-section text-center">
-                <h3>What is Daloy?</h3>
-                <p>Daloy is a community-driven platform connecting people with free drinking water. Whether it's a public fountain, a friendly local eatery, or a verified refill station, we make it easy to stay hydrated without buying single-use plastics.</p>
+            <div class="hero animate-up">
+                <div class="hero-content">
+                    <div class="hero-badge">Beta</div>
+                    <h2>Quench your thirst.<br>Save the planet.</h2>
+                    <p>Find free drinking water and refill stations across Metro Manila and beyond. No single-use plastics needed.</p>
+                    <button class="btn-primary btn-large tab-link" data-target="map-view">Find Water Near Me</button>
+                </div>
+                <div class="hero-image">
+                    <div class="floating-drop">💧</div>
+                </div>
             </div>
 
             <!-- UN SDGs Section -->
-            <div class="content-section bg-light">
-                <h3 class="text-center">Our Commitment</h3>
+            <div class="content-section text-center bg-light animate-up stagger-1">
+                <h3>Our Commitment</h3>
+                <p class="subtitle">Building a sustainable, walkable city aligned with global goals.</p>
                 <div class="sdg-grid">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Sustainable_Development_Goal_6CleanWater.svg" alt="SDG 6: Clean Water and Sanitation">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/47/Sustainable_Development_Goal_11SustainableCities.svg" alt="SDG 11: Sustainable Cities and Communities">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/10/Sustainable_Development_Goal_12ResponsibleConsumption.svg" alt="SDG 12: Responsible Consumption and Production">
+                    <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/1d6a1084259517.5d56cfced8423.jpg" alt="SDG 6">
+                    <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/1e3d5f84259517.5d56cfcf4c140.jpg" alt="SDG 11">
+                    <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/61269284259517.5d56cfcf4a970.jpg" alt="SDG 12">
+                </div>
+            </div>
+
+            <!-- Mini Map Section -->
+            <div class="content-section animate-up stagger-2">
+                <div class="split-section">
+                    <div class="split-left">
+                        <div id="mini-map"></div>
+                    </div>
+                    <div class="split-right">
+                        <h3>Water in your vicinity</h3>
+                        <p>Check out the hydration spots currently active near you. The map is updated daily by our community.</p>
+                        <button class="btn-secondary tab-link" data-target="map-view">Explore Full Map</button>
+                    </div>
                 </div>
             </div>
 
             <!-- Partners Section -->
-            <div class="content-section text-center">
+            <div class="content-section text-center animate-up stagger-3">
                 <h3>Our Partners</h3>
-                <p class="subtitle">Establishments keeping our community hydrated.</p>
+                <p class="subtitle">Local establishments keeping our community hydrated.</p>
                 <div class="partners-grid">
-                    <div class="partner-card">Logo 1</div>
-                    <div class="partner-card">Logo 2</div>
-                    <div class="partner-card">Logo 3</div>
-                </div>
-            </div>
-
-            <!-- Mini Map Section (2/3 and 1/3 split) -->
-            <div class="content-section split-section">
-                <div class="split-left">
-                    <div id="mini-map"></div>
-                </div>
-                <div class="split-right">
-                    <h3>Water Near You</h3>
-                    <p>Check out the hydration spots currently active in your vicinity.</p>
-                    <button class="btn-secondary" onclick="document.querySelector('[data-target=\'map-view\']').click()">Explore Full Map</button>
+                    <div class="partner-card">Café Local</div>
+                    <div class="partner-card">QC Bike Hub</div>
+                    <div class="partner-card">Metro Mall</div>
                 </div>
             </div>
 
             <!-- Contribute CTA -->
-            <div class="content-section text-center bg-primary-light">
+            <div class="cta-section text-center animate-up stagger-4">
                 <h3>Know a spot we missed?</h3>
-                <p>Help expand the network by adding new water stations to the map.</p>
-                <button class="btn-primary" onclick="document.querySelector('[data-target=\'add-view\']').click()">Add a Location</button>
+                <p>Help expand the Pawi network by adding new water fountains or friendly merchants to the map.</p>
+                <button class="btn-primary tab-link" data-target="add-view">Add a Location</button>
             </div>
+
+            <!-- Footer -->
+            <footer class="site-footer">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <h2>💧 Pawi</h2>
+                        <p>A community-driven hydration map in support of the Pedestrian Pathway Safety Initiative, Quezon City.</p>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Contact Us</h4>
+                        <ul>
+                            <li>Email: hello@pawi.ph</li>
+                            <li>Report an issue</li>
+                            <li>Partner with us</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2026 Pawi - Free Water PH. All rights reserved.</p>
+                </div>
+            </footer>
         </section>
 
         <!-- FULL MAP MODULE -->
-        <section id="map-view" class="module map-layout">
+        <section id="map-view" class="module">
             <aside class="map-sidebar">
+                <!-- Location Entry Search for Browsing Map -->
+                <div class="map-search-container">
+                    <input type="text" id="map-search-input" placeholder="Search for a city or street...">
+                    <button id="map-search-btn" class="btn-primary">Go</button>
+                </div>
                 <div class="filters">
                     <h3>Nearby Spots</h3>
                     <select id="filter-access" class="filter-dropdown">
@@ -101,21 +130,90 @@
             </div>
         </section>
 
-        <!-- ADD LOCATION MODULE (Kept from previous, slightly updated) -->
-        <section id="add-view" class="module">
-            <div class="card">
+        <!-- ADD LOCATION MODULE -->
+        <section id="add-view" class="module bg-light">
+            <div class="card animate-up">
                 <h2>Add a Hydration Spot</h2>
-                <!-- Form content remains the same as your previous setup -->
-                <!-- ... -->
+                <p class="subtitle">Tap the map to set the coordinates, then fill in the details.</p>
+                
+                <form id="add-location-form">
+                    
+                    <!-- Search field to quickly jump on the contribute map -->
+                    <div class="form-group">
+                        <label>General Location</label>
+                        <input type="text" id="loc-search" placeholder="e.g. Quezon City, Diliman">
+                    </div>
+
+                    <!-- Map specifically for picking location -->
+                    <div class="form-group">
+                        <label>Pinpoint on Map</label>
+                        <div id="contrib-map" style="height: 250px; border-radius: 12px; border: 2px solid var(--border-color); z-index: 1;"></div>
+                        <input type="text" id="loc-coords" placeholder="Coordinates will appear here" readonly required style="margin-top: 8px; background: #EEE; cursor: not-allowed;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Location Name</label>
+                        <input type="text" id="loc-name" placeholder="e.g. Quezon Memorial Fountain" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select id="loc-type">
+                                <option value="Water Fountain">Water Fountain</option>
+                                <option value="Restaurant">Restaurant (Service Water)</option>
+                                <option value="Refilling Station">Refilling Station</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Setting</label>
+                            <select id="loc-setting">
+                                <option value="Indoor">Indoor</option>
+                                <option value="Outdoor">Outdoor</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Access</label>
+                        <select id="loc-access">
+                            <option value="Public">Public (Anyone)</option>
+                            <option value="Customers Only">Customers Only</option>
+                            <option value="Restricted">Restricted</option>
+                        </select>
+                    </div>
+
+                    <fieldset class="location-details">
+                        <legend>Address Details</legend>
+                        <input type="text" id="loc-building" placeholder="Building / Mall Name (Optional)">
+                        <div class="form-row">
+                            <input type="text" id="loc-floor" placeholder="Floor Level">
+                            <input type="text" id="loc-street" placeholder="Street Name">
+                        </div>
+                    </fieldset>
+
+                    <div class="form-group">
+                        <label>Photo Proof (Optional for now)</label>
+                        <input type="file" id="loc-image" accept="image/*">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes / Instructions</label>
+                        <textarea id="loc-notes" placeholder="e.g. Bring your own tumbler, near the restrooms." rows="3"></textarea>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn-primary">Submit Location</button>
+                </form>
             </div>
         </section>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/supabase.js"></script>
-    <script src="js/storage.js"></script>
+    <script src="js/storage.js"></script> -->
     <script src="js/map.js"></script>
     <script src="js/app.js"></script>
 </body>
