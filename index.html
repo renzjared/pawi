@@ -66,10 +66,9 @@
             <div class="content-section text-center animate-up stagger-3">
                 <h3>Our Partners</h3>
                 <p class="subtitle">Local establishments keeping our community hydrated.</p>
-                <div class="partners-grid">
-                    <div class="partner-card">Café Local</div>
-                    <div class="partner-card">QC Bike Hub</div>
-                    <div class="partner-card">Metro Mall</div>
+                <div class="partners-grid" id="partners-slideshow-container" style="display: flex; gap: 24px; overflow-x: auto; padding: 20px 0; justify-content: center; align-items: center;">
+                    <!-- Populated by JS Slideshow -->
+                    <p class="subtitle" id="no-partners-msg">Loading partners...</p>
                 </div>
             </div>
 
@@ -270,6 +269,52 @@
                 <button id="close-auth-btn" style="margin-top: 16px; width: 100%; background: none; border: none; color: var(--text-light); font-weight: 700; cursor: pointer;">Cancel</button>
             </div>
         </div>
+
+        <!-- DASHBOARD MODULE -->
+        <section id="dashboard-view" class="module bg-light">
+            <div class="card animate-up" style="max-width: 800px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2>My Dashboard</h2>
+                    <button id="btn-logout" class="btn-secondary" style="padding: 10px 20px; font-size: 14px;">Log Out</button>
+                </div>
+                
+                <div style="background: var(--primary-light); padding: 24px; border-radius: 16px; margin-bottom: 32px; text-align: center;">
+                    <h3 style="margin-bottom: 8px;">Total Impact</h3>
+                    <p style="font-size: 36px; font-weight: 800; color: var(--primary); margin: 0;"><span id="dash-xp">0</span> XP</p>
+                    <p class="subtitle" style="margin-top: 8px;">Earn XP by adding spots and leaving helpful comments!</p>
+                </div>
+
+                <h3>My Contributions</h3>
+                <div id="dash-contributions" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ADMIN MODULE -->
+        <section id="admin-view" class="module bg-light">
+            <div class="card animate-up">
+                <h2>Admin Panel</h2>
+                <p class="subtitle">Manage featured partner logos for the homepage.</p>
+                
+                <form id="add-partner-form" style="margin-bottom: 32px; padding-bottom: 32px; border-bottom: 2px solid var(--border-color);">
+                    <div class="form-group">
+                        <label>Partner Name</label>
+                        <input type="text" id="partner-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" id="partner-url" placeholder="https://example.com/logo.png" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Partner</button>
+                </form>
+
+                <h3>Active Partners</h3>
+                <div id="admin-partners-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
