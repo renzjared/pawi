@@ -10,51 +10,47 @@ document.addEventListener('DOMContentLoaded', async () => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const targetId = link.dataset.target;
-
             navBtns.forEach(b => b.classList.remove('active'));
             const matchingNavBtn = document.querySelector(`.tab-btn[data-target="${targetId}"]`);
             if (matchingNavBtn) matchingNavBtn.classList.add('active');
-
             modules.forEach(m => m.classList.remove('active'));
             document.getElementById(targetId).classList.add('active');
-            
             setTimeout(() => {
                 if (targetId === 'map-view') fullMap.invalidateSize();
                 if (targetId === 'landing-view') miniMap.invalidateSize();
                 if (targetId === 'add-view') contribMap.invalidateSize();
             }, 100);
-            
             document.getElementById('main-content').scrollTo(0,0);
         });
     });
 
-    // Map Searching and Filtering
+    // Map Searching
     document.getElementById('map-search-btn').addEventListener('click', () => {
-        const query = document.getElementById('map-search-input').value;
-        geocodeLocation(query, fullMap);
+        geocodeLocation(document.getElementById('map-search-input').value, fullMap);
     });
-    
     document.getElementById('map-search-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') geocodeLocation(e.target.value, fullMap);
     });
 
-    // Image Upload Type Toggler
+    // Image Upload Toggler
     document.getElementById('loc-image-type').addEventListener('change', (e) => {
-        const fileGroup = document.getElementById('group-image-file');
-        const urlGroup = document.getElementById('group-image-url');
-        
-        fileGroup.style.display = 'none';
-        urlGroup.style.display = 'none';
-        
-        if (e.target.value === 'file') {
-            fileGroup.style.display = 'block';
-        } else if (e.target.value === 'url') {
-            urlGroup.style.display = 'block';
-        }
+        document.getElementById('group-image-file').style.display = e.target.value === 'file' ? 'block' : 'none';
+        document.getElementById('group-image-url').style.display = e.target.value === 'url' ? 'block' : 'none';
     });
 
-    document.getElementById('filter-access').addEventListener('change', (e) => {
-        plotLocations(allLocations, e.target.value);
+    // MULTI-FILTER LOGIC
+    window.triggerPlotting = () => {
+        const currentFilters = {
+            access: document.getElementById('filter-access').value,
+            type: document.getElementById('filter-type').value,
+            setting: document.getElementById('filter-setting').value
+        };
+        plotLocations(allLocations, currentFilters);
+    };
+
+    // Attach listener to all dropdowns
+    document.querySelectorAll('.filter-trigger').forEach(select => {
+        select.addEventListener('change', window.triggerPlotting);
     });
 
     // Live Supabase Form Submission
@@ -63,12 +59,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const coordsInput = document.getElementById('loc-coords');
-        if (!coordsInput.dataset.lat) {
-            alert("Please tap the map to pinpoint the location first.");
-            return;
-        }
+        if (!coordsInput.dataset.lat) return alert("Please tap the map to pinpoint the location first.");
 
         submitBtn.disabled = true;
         submitBtn.textContent = 'Uploading...';
@@ -79,17 +71,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             if (imageType === 'file') {
                 const fileInput = document.getElementById('loc-image-file');
-                if (fileInput.files.length > 0) {
-                    imageUrl = await uploadImageToSupabase(fileInput.files[0]);
-                }
+                if (fileInput.files.length > 0) imageUrl = await uploadImageToSupabase(fileInput.files[0]);
             } else if (imageType === 'url') {
                 const urlInput = document.getElementById('loc-image-url').value;
-                if (urlInput.trim() !== '') {
-                    imageUrl = urlInput.trim();
-                }
+                if (urlInput.trim() !== '') imageUrl = urlInput.trim();
             }
 
-            // Construct Payload with new fields
             const payload = {
                 name: document.getElementById('loc-name').value,
                 type: document.getElementById('loc-type').value,
@@ -106,26 +93,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 lng: coordsInput.dataset.lng
             };
 
-            // Save to DB
             submitBtn.textContent = 'Saving Location...';
             await saveLocationToDB(payload);
-
             alert('Awesome! Location added successfully to the live map.');
             form.reset();
-            coordsInput.dataset.lat = '';
-            coordsInput.dataset.lng = '';
+            coordsInput.dataset.lat = ''; coordsInput.dataset.lng = '';
             
-            // Switch back to map view 
             document.querySelector('.tab-btn[data-target="map-view"]').click();
-            
-            // Re-fetch and plot all locations to include the new one
             allLocations = await fetchAllLocations();
-            plotLocations(allLocations, document.getElementById('filter-access').value);
+            window.triggerPlotting();
             
-            // Pan to new location
-            setTimeout(() => {
-                fullMap.setView([payload.lat, payload.lng], 16);
-            }, 200);
+            setTimeout(() => fullMap.setView([payload.lat, payload.lng], 16), 200);
             
         } catch (error) {
             console.error(error);
@@ -136,10 +114,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Initial load of live pins from Supabase
+    // Initial load
     try {
         allLocations = await fetchAllLocations(); 
-        plotLocations(allLocations, 'all');
+        window.triggerPlotting();
     } catch (error) {
         console.error('Failed to load map pins:', error);
     }

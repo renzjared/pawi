@@ -11,7 +11,11 @@
 </head>
 <body>
     <header class="navbar">
-        <a href="#" class="brand-logo tab-link" data-target="landing-view">💧 Pawi</a>
+        <a href="#" class="brand-logo tab-link" data-target="landing-view">
+            <!-- SVG Water Drop Logo -->
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 21.5c-3.31 0-6-2.66-6-5.96 0-2.58 2.27-5.91 5.4-8.86l.6-.55.6.55c3.13 2.95 5.4 6.28 5.4 8.86 0 3.3-2.69 5.96-6 5.96z"/></svg>
+            Pawi
+        </a>
         <div class="tabs">
             <button class="tab-btn active tab-link" data-target="landing-view">Home</button>
             <button class="tab-btn tab-link" data-target="map-view">Map</button>
@@ -30,7 +34,10 @@
                     <button class="btn-primary btn-large tab-link" data-target="map-view">Find Water Near Me</button>
                 </div>
                 <div class="hero-image">
-                    <div class="floating-drop">💧</div>
+                    <!-- SVG Animated Floating Drop -->
+                    <div class="floating-drop">
+                        <svg viewBox="0 0 24 24" width="120" height="120" fill="currentColor"><path d="M12 21.5c-3.31 0-6-2.66-6-5.96 0-2.58 2.27-5.91 5.4-8.86l.6-.55.6.55c3.13 2.95 5.4 6.28 5.4 8.86 0 3.3-2.69 5.96-6 5.96z"/></svg>
+                    </div>
                 </div>
             </div>
 
@@ -74,7 +81,10 @@
             <footer class="site-footer">
                 <div class="footer-content">
                     <div class="footer-brand">
-                        <h2>💧 Pawi</h2>
+                        <h2 style="display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 21.5c-3.31 0-6-2.66-6-5.96 0-2.58 2.27-5.91 5.4-8.86l.6-.55.6.55c3.13 2.95 5.4 6.28 5.4 8.86 0 3.3-2.69 5.96-6 5.96z"/></svg>
+                            Pawi
+                        </h2>
                         <p>A community-driven hydration map in support of the Pedestrian Pathway Safety Initiative, Quezon City.</p>
                     </div>
                     <div class="footer-links">
@@ -101,12 +111,27 @@
                 </div>
                 <div class="filters">
                     <h3>Nearby Spots</h3>
-                    <select id="filter-access" class="filter-dropdown">
-                        <option value="all">All Access Types</option>
-                        <option value="Public">Public (Green)</option>
-                        <option value="Customers Only">Customers Only (Orange)</option>
-                        <option value="Restricted">Restricted (Red)</option>
-                    </select>
+                    <!-- MULTIPLE FILTERS GRID -->
+                    <div class="filters-grid">
+                        <select id="filter-access" class="filter-dropdown filter-trigger">
+                            <option value="all">All Access</option>
+                            <option value="Public">Public Access</option>
+                            <option value="Customers Only">Customers Only</option>
+                            <option value="Restricted">Restricted</option>
+                        </select>
+                        <select id="filter-type" class="filter-dropdown filter-trigger">
+                            <option value="all">All Types</option>
+                            <option value="Water Fountain">Water Fountains</option>
+                            <option value="Restaurant">Restaurants</option>
+                            <option value="Refilling Station">Refilling Stations</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <select id="filter-setting" class="filter-dropdown filter-trigger">
+                            <option value="all">Any Setting</option>
+                            <option value="Indoor">Indoor</option>
+                            <option value="Outdoor">Outdoor</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="locations-list" id="locations-list">
                     <!-- Populated by JS -->
@@ -211,12 +236,276 @@
                         </select>
                     </div>
 
-                    <!-- Hidden by default, shown if "Upload File" is selected -->
                     <div class="form-group" id="group-image-file" style="display: none;">
                         <input type="file" id="loc-image-file" accept="image/*">
                     </div>
 
-                    <!-- Hidden by default, shown if "Image URL" is selected -->
+                    <div class="form-group" id="group-image-url" style="display: none;">
+                        <input type="url" id="loc-image-url" placeholder="https://example.com/photo.jpg">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes / Instructions</label>
+                        <textarea id="loc-notes" placeholder="e.g. Bring your own tumbler." rows="2"></textarea>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn-primary">Submit Location</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/ph-address.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pawi - Free Water PH</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="navbar">
+        <a href="#" class="brand-logo tab-link" data-target="landing-view">
+            <!-- SVG Water Drop Logo -->
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 21.5c-3.31 0-6-2.66-6-5.96 0-2.58 2.27-5.91 5.4-8.86l.6-.55.6.55c3.13 2.95 5.4 6.28 5.4 8.86 0 3.3-2.69 5.96-6 5.96z"/></svg>
+            Pawi
+        </a>
+        <div class="tabs">
+            <button class="tab-btn active tab-link" data-target="landing-view">Home</button>
+            <button class="tab-btn tab-link" data-target="map-view">Map</button>
+            <button class="tab-btn tab-link" data-target="add-view">Contribute</button>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <!-- LANDING PAGE MODULE -->
+        <section id="landing-view" class="module active">
+            <div class="hero animate-up">
+                <div class="hero-content">
+                    <div class="hero-badge">Beta</div>
+                    <h2>Quench your thirst.<br>Save the planet.</h2>
+                    <p>Find free drinking water and refill stations across Metro Manila and beyond. No single-use plastics needed.</p>
+                    <button class="btn-primary btn-large tab-link" data-target="map-view">Find Water Near Me</button>
+                </div>
+                <div class="hero-image">
+                    <!-- SVG Animated Floating Drop -->
+                    <div class="floating-drop">
+                        <svg viewBox="0 0 24 24" width="120" height="120" fill="currentColor"><path d="M12 21.5c-3.31 0-6-2.66-6-5.96 0-2.58 2.27-5.91 5.4-8.86l.6-.55.6.55c3.13 2.95 5.4 6.28 5.4 8.86 0 3.3-2.69 5.96-6 5.96z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section text-center bg-light animate-up stagger-1">
+                <h3>Our Commitment</h3>
+                <p class="subtitle">Building a sustainable, walkable city aligned with global goals.</p>
+                <div class="sdg-grid">
+                    <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/1d6a1084259517.5d56cfced8423.jpg" alt="SDG 6">
+                    <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/1e3d5f84259517.5d56cfcf4c140.jpg" alt="SDG 11">
+                    <img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/61269284259517.5d56cfcf4a970.jpg" alt="SDG 12">
+                </div>
+            </div>
+
+            <div class="content-section animate-up stagger-2">
+                <div class="split-section">
+                    <div class="split-left"><div id="mini-map"></div></div>
+                    <div class="split-right">
+                        <h3>Water in your vicinity</h3>
+                        <p>Check out the hydration spots currently active near you. The map is updated daily by our community.</p>
+                        <button class="btn-secondary tab-link" data-target="map-view">Explore Full Map</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section text-center animate-up stagger-3">
+                <h3>Our Partners</h3>
+                <p class="subtitle">Local establishments keeping our community hydrated.</p>
+                <div class="partners-grid">
+                    <div class="partner-card">Café Local</div>
+                    <div class="partner-card">QC Bike Hub</div>
+                    <div class="partner-card">Metro Mall</div>
+                </div>
+            </div>
+
+            <div class="cta-section text-center animate-up stagger-4">
+                <h3>Know a spot we missed?</h3>
+                <p>Help expand the Pawi network by adding new water fountains or friendly merchants to the map.</p>
+                <button class="btn-primary tab-link" data-target="add-view">Add a Location</button>
+            </div>
+
+            <footer class="site-footer">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <h2 style="display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 21.5c-3.31 0-6-2.66-6-5.96 0-2.58 2.27-5.91 5.4-8.86l.6-.55.6.55c3.13 2.95 5.4 6.28 5.4 8.86 0 3.3-2.69 5.96-6 5.96z"/></svg>
+                            Pawi
+                        </h2>
+                        <p>A community-driven hydration map in support of the Pedestrian Pathway Safety Initiative, Quezon City.</p>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Contact Us</h4>
+                        <ul>
+                            <li>Email: hello@pawi.ph</li>
+                            <li>Report an issue</li>
+                            <li>Partner with us</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2026 Pawi - Free Water PH. All rights reserved.</p>
+                </div>
+            </footer>
+        </section>
+
+        <!-- FULL MAP MODULE -->
+        <section id="map-view" class="module">
+            <aside class="map-sidebar">
+                <div class="map-search-container">
+                    <input type="text" id="map-search-input" placeholder="Search for a city or street...">
+                    <button id="map-search-btn" class="btn-primary">Go</button>
+                </div>
+                <div class="filters">
+                    <h3>Nearby Spots</h3>
+                    <!-- MULTIPLE FILTERS GRID -->
+                    <div class="filters-grid">
+                        <select id="filter-access" class="filter-dropdown filter-trigger">
+                            <option value="all">All Access</option>
+                            <option value="Public">Public Access</option>
+                            <option value="Customers Only">Customers Only</option>
+                            <option value="Restricted">Restricted</option>
+                        </select>
+                        <select id="filter-type" class="filter-dropdown filter-trigger">
+                            <option value="all">All Types</option>
+                            <option value="Water Fountain">Water Fountains</option>
+                            <option value="Restaurant">Restaurants</option>
+                            <option value="Refilling Station">Refilling Stations</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <select id="filter-setting" class="filter-dropdown filter-trigger">
+                            <option value="all">Any Setting</option>
+                            <option value="Indoor">Indoor</option>
+                            <option value="Outdoor">Outdoor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="locations-list" id="locations-list">
+                    <!-- Populated by JS -->
+                </div>
+            </aside>
+            <div class="map-container">
+                <div id="full-map"></div>
+            </div>
+        </section>
+
+        <!-- ADD LOCATION MODULE -->
+        <section id="add-view" class="module bg-light">
+            <div class="card animate-up">
+                <h2>Add a Hydration Spot</h2>
+                <p class="subtitle">Tap the map to set the coordinates. We will auto-detect the street for you.</p>
+                
+                <form id="add-location-form">
+                    
+                    <div class="form-group">
+                        <label>1. Pinpoint on Map</label>
+                        <div id="contrib-map" style="height: 250px; border-radius: 12px; border: 2px solid var(--border-color); z-index: 1;"></div>
+                        <input type="text" id="loc-coords" placeholder="Coordinates will appear here" readonly required style="margin-top: 8px; background: #EEE; cursor: not-allowed; font-size: 14px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>2. Specific Spot Name</label>
+                        <input type="text" id="loc-name" placeholder="e.g. Quezon Memorial Drinking Fountain" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select id="loc-type">
+                                <option value="Water Fountain">Water Fountain</option>
+                                <option value="Restaurant">Restaurant (Service Water)</option>
+                                <option value="Refilling Station">Refilling Station</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Setting</label>
+                            <select id="loc-setting">
+                                <option value="Indoor">Indoor</option>
+                                <option value="Outdoor">Outdoor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Access</label>
+                            <select id="loc-access">
+                                <option value="Public">Public (Anyone)</option>
+                                <option value="Customers Only">Customers Only</option>
+                                <option value="Restricted">Restricted</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <fieldset class="location-details">
+                        <legend>Detailed Address</legend>
+                        
+                        <div class="form-group">
+                            <label>Address Line 1 (Street, Building, Landmark)</label>
+                            <input type="text" id="loc-line1" placeholder="Auto-filled by map tap..." required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Address Line 2 (Floor, Room, Unit)</label>
+                            <input type="text" id="loc-line2" placeholder="e.g. 2nd Floor, near Restrooms (Optional)">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Province / Region</label>
+                                <select id="loc-province" required>
+                                    <option value="">Loading Provinces...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>City / Municipality</label>
+                                <select id="loc-city" required disabled>
+                                    <option value="">Select Province First</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Barangay</label>
+                                <select id="loc-barangay" required disabled>
+                                    <option value="">Select City First</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-group">
+                        <label>Photo Proof (Optional)</label>
+                        <select id="loc-image-type">
+                            <option value="none">None (No Photo)</option>
+                            <option value="file">Upload File</option>
+                            <option value="url">Enter Image URL</option>
+                            <option value="imgur" disabled>Upload via Imgur (Coming Soon)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="group-image-file" style="display: none;">
+                        <input type="file" id="loc-image-file" accept="image/*">
+                    </div>
+
                     <div class="form-group" id="group-image-url" style="display: none;">
                         <input type="url" id="loc-image-url" placeholder="https://example.com/photo.jpg">
                     </div>
